@@ -1,0 +1,6 @@
+This is a file for assigment 2
+Question: Write a program to open any file using the O_APPEND flag, then perform a seek to the beginning of the file and write some data to it. Where will the data appear in the file, and why does this happen?
+
+
+Hello, World!
+Hello, World!

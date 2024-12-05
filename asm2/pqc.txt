@@ -1,0 +1,3 @@
+Create any file and write some data into it. 
+Display the following information on the screen: file type, file name, last modification time, and file size.
+- Use the struct stat.
