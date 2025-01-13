@@ -10,18 +10,18 @@
 #define BUFFER_SIZE 1024
 #define PORT 5000
 
-// Cấu trúc để lưu thông tin của client
+// Client information
 typedef struct {
     int socket;
     struct sockaddr_in address;
     pthread_t thread;
 } client_info_t;
 
-int server_socket = -1;  // Socket của server
-client_info_t clients[10]; // Danh sách các client
-int client_count = 0;  // Số lượng client kết nối
+int server_socket = -1;  // Socket server
+client_info_t clients[10]; // list client
+int client_count = 0;  // Num of client is connecting
 
-// Hàm hiển thị các lệnh có sẵn
+// command
 void print_help() {
     printf("Use the commands below:\n");
     printf(" help                : display user interface options\n");
@@ -33,37 +33,36 @@ void print_help() {
     printf(" exit                : close the app\n");
 }
 
-// Hàm lấy và hiển thị địa chỉ IP của server
+// gets and shows IP server
 void get_my_ip() {
     char hostbuffer[256];
     char *IPbuffer;
     struct hostent *host_entry;
 
-    // Lấy tên máy chủ
+    // get host name
     if (gethostname(hostbuffer, sizeof(hostbuffer)) == -1) {
         perror("Get hostname failed");
         return;
     }
 
-    // Lấy thông tin về máy chủ
     host_entry = gethostbyname(hostbuffer);
     if (host_entry == NULL) {
         perror("Get host entry failed");
         return;
     }
 
-    // Lấy địa chỉ IP đầu tiên từ thông tin máy chủ
+    
     IPbuffer = inet_ntoa(*((struct in_addr *)host_entry->h_addr_list[0]));
 
     printf("Server IP Address: %s\n", IPbuffer);
 }
 
-// Hàm hiển thị port của server
+// get port server
 void get_my_port() {
     printf("Server is listening on port %d\n", PORT);
 }
 
-// Hàm hiển thị danh sách các client đang kết nối
+// show the list of client is connected
 void list_clients() {
     printf("Connected clients:\n");
     for (int i = 0; i < client_count; i++) {
@@ -73,7 +72,7 @@ void list_clients() {
     }
 }
 
-// Hàm xử lý lệnh nhập vào từ terminal
+// handle commmands from terminal
 void *handle_commands(void *arg) {
     char command[BUFFER_SIZE];
 
@@ -126,7 +125,7 @@ void *handle_commands(void *arg) {
     return NULL;
 }
 
-// Hàm xử lý kết nối từ client
+// handle connection from client
 void *handle_client(void *arg) {
     client_info_t *client_info = (client_info_t *)arg;
     char buffer[BUFFER_SIZE];
@@ -155,7 +154,7 @@ void *handle_client(void *arg) {
     return NULL;
 }
 
-// Hàm khởi tạo server và lắng nghe kết nối từ client
+//start server and listening
 void start_server() {
     struct sockaddr_in server_addr, client_addr;
     socklen_t client_len = sizeof(client_addr);
@@ -189,10 +188,10 @@ void start_server() {
     get_my_port();
     printf("Waiting for clients to connect...\n");
 
-    // Tạo một luồng để xử lý các lệnh nhập từ terminal
+    // thread for command
     pthread_create(&command_thread, NULL, handle_commands, NULL);
 
-    // Vòng lặp để chấp nhận các kết nối từ client
+    // accept client
     while (1) {
         int client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &client_len);
         if (client_socket < 0) {
@@ -204,7 +203,7 @@ void start_server() {
                 inet_ntoa(client_addr.sin_addr), 
                 ntohs(client_addr.sin_port));
 
-        // Lưu thông tin client vào danh sách
+        // save client infor
         if (client_count < 10) {
             clients[client_count].socket = client_socket;
             clients[client_count].address = client_addr;

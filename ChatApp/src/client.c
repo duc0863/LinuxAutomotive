@@ -10,7 +10,7 @@
 
 int sock = -1;  // Socket của client
 
-// Hàm nhận tin nhắn từ server
+// get message form server
 void *receive_message(void *arg) {
     char buffer[BUFFER_SIZE];
     while (1) {
@@ -33,7 +33,7 @@ void *receive_message(void *arg) {
     return NULL;
 }
 
-// Hàm hiển thị các lệnh có sẵn
+// command
 void print_help() {
     printf("Use the commands below:\n");
     printf(" help                : display user interface options\n");
@@ -45,7 +45,7 @@ void print_help() {
     printf(" exit                : close the app\n");
 }
 
-// Hàm lấy địa chỉ IP của client
+// Get IP of client
 void get_my_ip() {
     char hostbuffer[256];
     char *IPbuffer;
@@ -66,7 +66,7 @@ void get_my_ip() {
     printf("IP Address: %s\n", IPbuffer);
 }
 
-// Hàm lấy port của client
+// Get port of client
 void get_my_port() {
     struct sockaddr_in sin;
     socklen_t len = sizeof(sin);
@@ -79,7 +79,7 @@ void get_my_port() {
     printf("Client port: %d\n", ntohs(sin.sin_port));
 }
 
-// Hàm kết nối đến server
+// connect to server
 void connect_to_server(char *ip, int port) {
     struct sockaddr_in server_addr;
 
@@ -129,7 +129,7 @@ int main() {
 
             connect_to_server(ip, port);
 
-            // Tạo luồng để nhận tin nhắn từ server
+            // pthread to handle message
             pthread_create(&receive_thread, NULL, receive_message, NULL);
         } else if (strncmp(command, "send", 4) == 0) {
             if (sock == -1) {
